@@ -1,8 +1,9 @@
 pub mod unauthorized_access_2_fuzz_instructions {
     use crate::accounts_snapshots::*;
-    use solana_sdk::{native_token::LAMPORTS_PER_SOL, signer::keypair};
+    use solana_sdk::{native_token::LAMPORTS_PER_SOL, signer::keypair::Keypair};
     use trident_client::fuzzing::*;
     use unauthorized_access_2::ESCROW_SEED;
+    use unauthorized_access_2::ID as SYSTEM_PROGRAM_ID;
     #[derive(Arbitrary, DisplayIx, FuzzTestExecutor, FuzzDeserialize)]
     pub enum FuzzInstruction {
         Initialize(Initialize),
@@ -43,10 +44,10 @@ pub mod unauthorized_access_2_fuzz_instructions {
         type IxSnapshot = InitializeSnapshot<'info>;
         fn get_data(
             &self,
-            _client: &mut impl FuzzClient,
-            _fuzz_accounts: &mut FuzzAccounts,
+            client: &mut impl FuzzClient,
+            fuzz_accounts: &mut FuzzAccounts,
         ) -> Result<Self::IxData, FuzzingError> {
-            let receiver = _fuzz_accounts.receiver.get_or_create_account(
+            let receiver = fuzz_accounts.receiver.get_or_create_account(
                 self.data.receiver,
                 client,
                 10 * LAMPORTS_PER_SOL,
@@ -81,7 +82,7 @@ pub mod unauthorized_access_2_fuzz_instructions {
                     self.accounts.escrow,
                     &[
                         author.pubkey().as_ref(),
-                        client.pubkey().as_ref(),
+                        receiver.pubkey().as_ref(),
                         ESCROW_SEED.as_ref(),
                     ],
                     &unauthorized_access_2::ID,
@@ -127,13 +128,13 @@ pub mod unauthorized_access_2_fuzz_instructions {
                 10 * LAMPORTS_PER_SOL,
             );
 
-            let escrow = fuzz_accounts
+            let _escrow = fuzz_accounts
                 .escrow
                 .get_or_create_account(
                     self.accounts.escrow,
                     &[
                         author.pubkey().as_ref(),
-                        client.pubkey().as_ref(),
+                        receiver.pubkey().as_ref(),
                         ESCROW_SEED.as_ref(),
                     ],
                     &unauthorized_access_2::ID,
