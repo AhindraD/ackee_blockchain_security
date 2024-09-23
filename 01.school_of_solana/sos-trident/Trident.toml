@@ -6,13 +6,13 @@ validator_startup_timeout = 15000
 # Timeout in seconds (default: 10)
 timeout = 10
 # Number of fuzzing iterations (default: 0 [no limit])
-iterations = 0
+iterations = 999
 # Number of concurrent fuzzing threads (default: 0 [number of CPUs / 2])
-threads = 0
+threads = 8
 # Don't close children's stdin, stdout, stderr; can be noisy (default: false)
-keep_output = false
+keep_output = true
 # Disable ANSI console; use simple log output (default: false)
-verbose = false
+verbose = true
 # Exit upon seeing the first crash (default: false)
 exit_upon_crash = false
 # Maximal number of mutations per one run (default: 6)
