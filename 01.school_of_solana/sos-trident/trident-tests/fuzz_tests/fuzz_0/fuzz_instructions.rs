@@ -1,6 +1,8 @@
 pub mod unauthorized_access_2_fuzz_instructions {
     use crate::accounts_snapshots::*;
+    use solana_sdk::{native_token::LAMPORTS_PER_SOL, signer::keypair};
     use trident_client::fuzzing::*;
+    use unauthorized_access_2::ESCROW_SEED;
     #[derive(Arbitrary, DisplayIx, FuzzTestExecutor, FuzzDeserialize)]
     pub enum FuzzInstruction {
         Initialize(Initialize),
@@ -44,9 +46,15 @@ pub mod unauthorized_access_2_fuzz_instructions {
             _client: &mut impl FuzzClient,
             _fuzz_accounts: &mut FuzzAccounts,
         ) -> Result<Self::IxData, FuzzingError> {
+            let receiver = _fuzz_accounts.receiver.get_or_create_account(
+                self.data.receiver,
+                client,
+                10 * LAMPORTS_PER_SOL,
+            );
+
             let data = unauthorized_access_2::instruction::Initialize {
-                receiver: todo!(),
-                amount: todo!(),
+                receiver: receiver.pubkey(),
+                amount: self.data.amount,
             };
             Ok(data)
         }
@@ -55,11 +63,36 @@ pub mod unauthorized_access_2_fuzz_instructions {
             client: &mut impl FuzzClient,
             fuzz_accounts: &mut FuzzAccounts,
         ) -> Result<(Vec<Keypair>, Vec<AccountMeta>), FuzzingError> {
-            let signers = vec![todo!()];
+            let author = fuzz_accounts.author.get_or_create_account(
+                self.accounts.author,
+                client,
+                10 * LAMPORTS_PER_SOL,
+            );
+
+            let receiver = fuzz_accounts.receiver.get_or_create_account(
+                self.data.receiver,
+                client,
+                10 * LAMPORTS_PER_SOL,
+            );
+
+            let escrow = fuzz_accounts
+                .escrow
+                .get_or_create_account(
+                    self.accounts.escrow,
+                    &[
+                        author.pubkey().as_ref(),
+                        client.pubkey().as_ref(),
+                        ESCROW_SEED.as_ref(),
+                    ],
+                    &unauthorized_access_2::ID,
+                )
+                .unwrap();
+
+            let signers = vec![author.clone()];
             let acc_meta = unauthorized_access_2::accounts::Initialize {
-                author: todo!(),
-                escrow: todo!(),
-                system_program: todo!(),
+                author: author.pubkey(),
+                escrow: escrow.pubkey(),
+                system_program: SYSTEM_PROGRAM_ID,
             }
             .to_account_metas(None);
             Ok((signers, acc_meta))
@@ -82,11 +115,36 @@ pub mod unauthorized_access_2_fuzz_instructions {
             client: &mut impl FuzzClient,
             fuzz_accounts: &mut FuzzAccounts,
         ) -> Result<(Vec<Keypair>, Vec<AccountMeta>), FuzzingError> {
-            let signers = vec![todo!()];
+            let author = fuzz_accounts.author.get_or_create_account(
+                self.accounts.receiver,
+                client,
+                10 * LAMPORTS_PER_SOL,
+            );
+
+            let receiver = fuzz_accounts.receiver.get_or_create_account(
+                self.accounts.receiver,
+                client,
+                10 * LAMPORTS_PER_SOL,
+            );
+
+            let escrow = fuzz_accounts
+                .escrow
+                .get_or_create_account(
+                    self.accounts.escrow,
+                    &[
+                        author.pubkey().as_ref(),
+                        client.pubkey().as_ref(),
+                        ESCROW_SEED.as_ref(),
+                    ],
+                    &unauthorized_access_2::ID,
+                )
+                .unwrap();
+
+            let signers = vec![receiver.clone()];
             let acc_meta = unauthorized_access_2::accounts::Withdraw {
-                receiver: todo!(),
-                escrow: todo!(),
-                system_program: todo!(),
+                receiver: receiver.pubkey(),
+                escrow: author.pubkey(),
+                system_program: SYSTEM_PROGRAM_ID,
             }
             .to_account_metas(None);
             Ok((signers, acc_meta))
@@ -96,9 +154,9 @@ pub mod unauthorized_access_2_fuzz_instructions {
     #[doc = r" Keypair, PdaStore, TokenStore, MintStore, ProgramStore"]
     #[derive(Default)]
     pub struct FuzzAccounts {
-        author: AccountsStorage<todo!()>,
-        escrow: AccountsStorage<todo!()>,
-        receiver: AccountsStorage<todo!()>,
-        system_program: AccountsStorage<todo!()>,
+        author: AccountsStorage<Keypair>,
+        escrow: AccountsStorage<PdaStore>,
+        receiver: AccountsStorage<Keypair>,
+        // system_program: AccountsStorage<todo!()>,
     }
 }
