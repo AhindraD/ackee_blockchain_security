@@ -1,5 +1,6 @@
 //https://github.com/Ackee-Blockchain/school-of-solana/tree/master/2.lesson
 
+mod data_types;
 trait Show {
     fn show(&self) -> String;
 }

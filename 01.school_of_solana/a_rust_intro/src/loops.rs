@@ -13,6 +13,7 @@ fn main() {
 
     //while loop
     let mut i: u32 = 0;
+
     while i <= 5 {
         println!("i: {}", i);
         i += 1;
