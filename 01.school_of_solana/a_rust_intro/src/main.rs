@@ -1,6 +1,11 @@
 //https://github.com/Ackee-Blockchain/school-of-solana/tree/master/2.lesson
 
 mod data_types;
+mod enum_basic;
+mod loops;
+mod structs_basic;
+mod ownership_borrow;
+
 trait Show {
     fn show(&self) -> String;
 }

@@ -1,4 +1,4 @@
-fn main() {
+fn _main() {
     struct Unit;
 
     struct Pair(i16, i32);
