@@ -5,6 +5,7 @@ mod enum_basic;
 mod loops;
 mod structs_basic;
 mod ownership_borrow;
+mod trait_basic;
 
 trait Show {
     fn show(&self) -> String;
