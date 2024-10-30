@@ -9,7 +9,8 @@ fn _main() {
     let res;
     {
         let string2 = String::from("shorter");
-        res = longest(&string1.as_str(), &string2.as_str())
-        println!("the longest sr is: {}",res)
-    }// string2 goes out of scope here
+        res = longest(&string1.as_str(), &string2.as_str());
+        println!("the longest sr is: {}", res);
+    } // string2 goes out of scope here
+      // println!("{}", res);// throws error as string2 dropped
 }

@@ -2,33 +2,21 @@
 
 mod data_types;
 mod enum_basic;
-mod loops;
-mod structs_basic;
-mod ownership_borrow;
-mod trait_basic;
 mod lifetimes_rs;
-
-trait Show {
-    fn show(&self) -> String;
-}
-
-impl Show for i32 {
-    fn show(&self) -> String {
-        format!("four-byte signed {}", self)
-    }
-}
-
-impl Show for f64 {
-    fn show(&self) -> String {
-        format!("eight-byte float {}", self)
-    }
-}
+mod loops;
+mod option_result;
+mod ownership_borrow;
+mod structs_basic;
+mod trait_basic;
 
 fn main() {
-    let answer = 42;
-    let maybe_pi = 3.14;
-    let s1 = answer.show();
-    let s2 = maybe_pi.show();
-    println!("show {}", s1);
-    println!("show {}", s2);
+    fn find_char(s: &str, c: char) -> Option<usize> {
+        for (i, ch) in s.chars().enumerate() {
+            if ch == c {
+                return Some(i);
+            }
+        }
+        None
+    }
+    println!("{}", find_char("visxens", 's').unwrap());
 }
