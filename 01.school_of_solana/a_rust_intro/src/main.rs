@@ -6,6 +6,7 @@ mod loops;
 mod structs_basic;
 mod ownership_borrow;
 mod trait_basic;
+mod lifetimes_rs;
 
 trait Show {
     fn show(&self) -> String;
